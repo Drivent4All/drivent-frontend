@@ -2,10 +2,13 @@ import { useEffect } from 'react';
 import {
   BookingPage,
   Title,
-  LabelMessage
+  LabelMessage,
+  Hotels,
+  HotelContainer
 } from './styles';
 
 import useTicket from '../../../hooks/api/useTicket';
+import useHotel from '../../../hooks/api/useHotel';
 
 export default function Hotel() {
   const { ticket, getTicket } = useTicket();
@@ -22,7 +25,36 @@ export default function Hotel() {
         (!ticket.TicketType.includesHotel) ?
           <LabelMessage>Sua modalidade de ingresso não inclui hospedagem<br/>Prossiga para a escolha de atividades</LabelMessage>
           :
-          <LabelMessage>Em breve</LabelMessage>
+          <HotelsComponent />
+    );
+  };
+
+  const HotelsComponent = () => {
+    const { hotel, getHotel } = useHotel();
+
+    useEffect(async() => {
+      await getHotel();
+    }, []);
+
+    return (
+      <Hotels>
+        <p>Primeiro, escolha seu hotel</p>
+
+        {hotel ? 
+          hotel.map(hotel => <HotelComponent hotel={hotel} />)
+          :
+          <></>
+        }
+      </Hotels>
+    );
+  };
+
+  const HotelComponent = ({ hotel }) => {
+    return (
+      <HotelContainer>
+        <img src={hotel.image} />
+        <p>{hotel.name}</p>
+      </HotelContainer>
     );
   };
 
