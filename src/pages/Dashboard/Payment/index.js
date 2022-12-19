@@ -4,14 +4,18 @@ import PaymentForm from './PaymentForm';
 import useTicket from '../../../hooks/api/useTicket';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import usePayment from '../../../hooks/api/usePayment';
 
 export default function Payment() {
-  const {  ticket } = useTicket();
+  const { ticket } = useTicket();
+  const { paymentLoading, payment } = usePayment();
   const [ ticketType, setTicketType] = useState([]);
+  const [ userTicket, setUserTicket] = useState([]);
+
   useEffect(async() => {
     const userTicket = await ticket();
-    console.log(userTicket.TicketType);
     setTicketType(userTicket.TicketType);
+    setUserTicket(userTicket);
   }, []);
 
   return (
@@ -29,7 +33,7 @@ export default function Payment() {
       <Container>
         <h3>Pagamento</h3>
       </Container>
-      <PaymentForm />
+      <PaymentForm payment={payment} ticketId={userTicket.id} paymentLoading={paymentLoading}/>
     </>
   );
 }

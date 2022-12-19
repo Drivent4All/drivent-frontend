@@ -11,6 +11,7 @@ export default class PaymentForm extends React.Component {
     focus: '',
     name: '',
     number: '',
+    issuer: ''
   };
 
   handleInputFocus = (e) => {
@@ -22,9 +23,15 @@ export default class PaymentForm extends React.Component {
     this.setState({ [name]: value });
   };
 
-  submit = (e) => {
+  submit = async(e) => {
     e.preventDefault();
-    // console.log(this.state);
+    console.log(this.state);
+    const body = { ticketId: this.props.ticketId, cardData: this.state };
+    try {
+      await this.props.payment(body);
+    }catch(err) {
+      console.log(err);
+    }
   };
 
   render() {
@@ -37,6 +44,9 @@ export default class PaymentForm extends React.Component {
             focused={this.state.focus}
             name={this.state.name}
             number={this.state.number}
+            callback={(type) => {
+              this.setState({ issuer: type.issuer });
+            }}
           />
           <form onSubmit={this.submit} id="card">
             <input
@@ -75,7 +85,7 @@ export default class PaymentForm extends React.Component {
             </div>
           </form>
         </FormContainer>
-        <Button form="card" type="submit">
+        <Button form="card" type="submit" disabled={this.props.paymentLoading}>
           finalizar pagamento
         </Button>
       </>

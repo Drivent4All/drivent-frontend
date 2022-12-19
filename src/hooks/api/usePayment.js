@@ -1,9 +1,16 @@
 import useAsync from '../useAsync';
 
-import * as userApi from '../../services/userApi';
+import * as paymentApi from '../../services/paymentApi';
+import useToken from '../useToken';
 
 export default function usePayment() {
-  const { loading: paymentLoading, error: paymentError, act: payment } = useAsync(userApi.payment, false);
+  const token = useToken();
+
+  const { 
+    loading: paymentLoading, 
+    error: paymentError, 
+    act: payment 
+  } = useAsync((data) => paymentApi.payment( data, token ), false);
 
   return {
     paymentLoading,
