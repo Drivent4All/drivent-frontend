@@ -7,6 +7,8 @@ import { useState } from 'react';
 import usePayment from '../../../hooks/api/usePayment';
 import useGetPayment from '../../../hooks/api/useGetPayment';
 
+import PaymentConfirmation from './PaymentConfirmation';
+
 export default function Payment() {
   const { ticket } = useTicket();
   const { paymentLoading, payment } = usePayment();
@@ -34,7 +36,6 @@ export default function Payment() {
 
   return (
     <>
-      <h1>{isPayed? 'Ta pago' : 'n ta'}</h1>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
       <Container>
         <h3>Ingresso Escolhido</h3>
@@ -48,7 +49,10 @@ export default function Payment() {
       <Container>
         <h3>Pagamento</h3>
       </Container>
-      <PaymentForm payment={payment} ticketId={userTicket.id} paymentLoading={paymentLoading}/>
+      {isPayed? 
+        <PaymentConfirmation/> :  
+        <PaymentForm payment={payment} ticketId={userTicket.id} paymentLoading={paymentLoading}/>}
+
     </>
   );
 }
@@ -64,6 +68,7 @@ const Container = styled.div`
     font-size: 1rem;
   }
 `;
+
 const TicketTypeBox = styled.div`
   width: 20rem;
   height: 5rem;

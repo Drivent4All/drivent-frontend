@@ -1,6 +1,7 @@
 import React from 'react';
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import Button from '../../../components/Form/Button';
 
@@ -29,8 +30,9 @@ export default class PaymentForm extends React.Component {
     const body = { ticketId: this.props.ticketId, cardData: this.state };
     try {
       await this.props.payment(body);
+      toast('Pagamento Concluído');
     }catch(err) {
-      console.log(err);
+      toast('Houve um erro ao processar o pagamento');
     }
   };
 
