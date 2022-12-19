@@ -5,21 +5,36 @@ import useTicket from '../../../hooks/api/useTicket';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import usePayment from '../../../hooks/api/usePayment';
+import useGetPayment from '../../../hooks/api/useGetPayment';
 
 export default function Payment() {
   const { ticket } = useTicket();
   const { paymentLoading, payment } = usePayment();
+  const { getPayment } = useGetPayment();
   const [ ticketType, setTicketType] = useState([]);
   const [ userTicket, setUserTicket] = useState([]);
+  const [isPayed, setIsPayed] = useState(false);
 
   useEffect(async() => {
     const userTicket = await ticket();
     setTicketType(userTicket.TicketType);
     setUserTicket(userTicket);
+
+    if(userTicket.status === 'PAID') {
+      setIsPayed(true);
+    }
   }, []);
+
+  // useEffect(async() => {
+  //   const payment = await getPayment(userTicket.id);
+  //   if(!payment) console.log('não tem pagamento ainda');
+
+  //   console.log(payment);
+  // }, []);
 
   return (
     <>
+      <h1>{isPayed? 'Ta pago' : 'n ta'}</h1>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
       <Container>
         <h3>Ingresso Escolhido</h3>
