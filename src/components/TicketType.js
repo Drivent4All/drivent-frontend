@@ -11,6 +11,8 @@ export default function SelectTicketType() {
   const [options, setOptions] = useState([]);
   const [prices, setPrices] = useState([]);
   const [withHotel, setWithHotel] = useState(null);
+  const [isFinal, setIsFinal] = useState(null);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     if (ticketType) {      
@@ -28,16 +30,32 @@ export default function SelectTicketType() {
     console.log(prices);
     if (target.id === '0') {
       setModality(true);
+      if (withHotel) {
+        setTotal(prices[0] + prices[2]);
+      }
+      else {
+        setTotal(prices[0]);
+      }
     };
     if (target.id === '1') {
       setModality(false);
+      setTotal(prices[1]);
+      setIsFinal(true);
     }
     if (target.id === '2') {
       setWithHotel(false);
+      setTotal(prices[0]);
+      setIsFinal(true);
     }
     if (target.id === '3') {
       setWithHotel(true);
+      setTotal(prices[0] + prices[2]);
+      setIsFinal(true);
     }
+  }
+
+  function placeReservation() {
+    console.log('OK');
   }
 
   return (
@@ -45,21 +63,27 @@ export default function SelectTicketType() {
       {enrollment ? 
         <>
           <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
-          <StyledTypography variant='h5' color='textSecondary' >Primeiro, escolha sua modalidade de ingresso</StyledTypography>
+          <HeadLiner>Primeiro, escolha sua modalidade de ingresso</HeadLiner>
           <OptionBox>
             <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(prices[0]/100).toString()}</ModalityBox>
-            <ModalityBox id={1} color={!modality} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
+            <ModalityBox id={1} color={modality===false} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
           </OptionBox>          
         </>  
         : 'Nada aqui'}
       {modality ?
         <>          
-          <StyledTypography variant='h5' color='textSecondary' >Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
+          <HeadLiner>Ótimo! Agora escolha sua modalidade de hospedagem</HeadLiner>
           <OptionBox>
-            <ModalityBox id={2} color={!withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Sem Hotel</h3>+ R$ 0</ModalityBox>
+            <ModalityBox id={2} color={withHotel===false} onClick={e => checkOption(e.currentTarget)}><h3>Sem Hotel</h3>+ R$ 0</ModalityBox>
             <ModalityBox id={3} color={withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Com Hotel</h3>+ R$ {(prices[2]/100).toString()}</ModalityBox>          
           </OptionBox>          
         </>  
+        : ''}
+      {isFinal ?
+        <>
+          <HeadLiner>{'Fechado! O total ficou em '} <h3> R$ {(total/100).toString()}</h3>. Agora é só confirmar:</HeadLiner>
+          <Button onClick={placeReservation}>RESERVAR INGRESSO</Button>
+        </>
         : ''}
     </>
   );
@@ -85,6 +109,21 @@ const handleBorderColorType = color => {
 
 const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
+`;
+
+const HeadLiner = styled.div`
+  display: flex;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 23px;
+  color: #8E8E8E;
+  margin-bottom: 17px;
+
+  h3 {
+    font-weight: 600;
+  }
 `;
 
 const ModalityBox = styled.div`
@@ -117,3 +156,21 @@ const OptionBox = styled.div`
   margin-bottom: 44px;
 `;
 
+const Button = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 162px;
+  height: 37px;
+  background: #E0E0E0;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #000000;
+  cursor: pointer;
+`;
