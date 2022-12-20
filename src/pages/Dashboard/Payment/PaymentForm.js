@@ -26,11 +26,12 @@ export default class PaymentForm extends React.Component {
 
   submit = async(e) => {
     e.preventDefault();
-    console.log(this.state);
     const body = { ticketId: this.props.ticketId, cardData: this.state };
     try {
       await this.props.payment(body);
       toast('Pagamento Concluído');
+      this.props.setIsEnrolled(false);
+      this.props.setIsEnrolled(true);
     }catch(err) {
       toast('Houve um erro ao processar o pagamento');
     }
@@ -47,7 +48,7 @@ export default class PaymentForm extends React.Component {
             name={this.state.name}
             number={this.state.number}
             callback={(type) => {
-              this.setState({ issuer: type.issuer });
+              this.setState({ issuer: type.issuer.toUpperCase() });
             }}
           />
           <form onSubmit={this.submit} id="card">

@@ -5,57 +5,74 @@ import useTicket from '../../../hooks/api/useTicket';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import usePayment from '../../../hooks/api/usePayment';
-import useGetPayment from '../../../hooks/api/useGetPayment';
-
 import PaymentConfirmation from './PaymentConfirmation';
+import useEnrollment from '../../../hooks/api/useEnrollment';
 
 export default function Payment() {
   const { ticket } = useTicket();
   const { paymentLoading, payment } = usePayment();
-  const { getPayment } = useGetPayment();
   const [ ticketType, setTicketType] = useState([]);
   const [ userTicket, setUserTicket] = useState([]);
   const [isPayed, setIsPayed] = useState(false);
+  const [ isEnrolled, setIsEnrolled ] = useState(false);
+  const { getEnrollment } = useEnrollment();
 
   useEffect(async() => {
     const userTicket = await ticket();
     setTicketType(userTicket.TicketType);
     setUserTicket(userTicket);
-
     if(userTicket.status === 'PAID') {
       setIsPayed(true);
     }
-  }, []);
+  }, [isEnrolled]);
 
-  // useEffect(async() => {
-  //   const payment = await getPayment(userTicket.id);
-  //   if(!payment) console.log('não tem pagamento ainda');
-
-  //   console.log(payment);
-  // }, []);
+  useEffect(async() => {
+    try{
+      await getEnrollment();
+      setIsEnrolled(true);
+    }catch(err) {
+    };
+  }, [isPayed]);
 
   return (
-    <>
-      <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      <Container>
-        <h3>Ingresso Escolhido</h3>
-        <TicketTypeBox>
-          <p>
-            {ticketType.isRemote? 'Remoto' : ticketType.includesHotel? 'Presencial + Com Hotel' : 'Presencial + Sem Hotel'}
-            <span>R$ {ticketType.price}</span>
-          </p>
-        </TicketTypeBox>
-      </Container>
-      <Container>
-        <h3>Pagamento</h3>
-      </Container>
-      {isPayed? 
-        <PaymentConfirmation/> :  
-        <PaymentForm payment={payment} ticketId={userTicket.id} paymentLoading={paymentLoading}/>}
-
+    <>{isEnrolled?   
+      <>
+        <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
+        <Container>
+          <h3>Ingresso Escolhido</h3>
+          <TicketTypeBox>
+            <p>
+              {ticketType.isRemote? 'Remoto' : ticketType.includesHotel? 'Presencial + Com Hotel' : 'Presencial + Sem Hotel'}
+              <span>R$ {ticketType.price}</span>
+            </p>
+          </TicketTypeBox>
+        </Container>
+        <Container>
+          <h3>Pagamento</h3>
+        </Container>
+        {isPayed? 
+          <PaymentConfirmation/> :  
+          <PaymentForm payment={payment} ticketId={userTicket.id} paymentLoading={paymentLoading} setIsEnrolled={setIsEnrolled}/>}
+      </>
+      : <UnenrolledMessage>Você precisa completar sua inscrição antes de prosseguir para a escolha do ingresso</UnenrolledMessage>} 
     </>
   );
 }
+
+const UnenrolledMessage = styled.div`
+  width: 50%;
+  height: 100%;
+  display: flex;
+  transform: translateX(50%);
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 1.5rem;
+  color: gray;
+  font-weight: lighter;
+
+`;
 
 const StyledTypography = styled(Typography)`
   margin-bottom: 40px !important;
