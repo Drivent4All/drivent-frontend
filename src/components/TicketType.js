@@ -9,36 +9,35 @@ export default function SelectTicketType() {
   const { ticketType } = useTicketType();
   const [modality, setModality] = useState(null);
   const [options, setOptions] = useState([]);
+  const [prices, setPrices] = useState([]);
+  const [withHotel, setWithHotel] = useState(null);
 
   useEffect(() => {
-    if (ticketType) {
-      let newOptions = [];
-      const present = ticketType.filter((e) => (e.isRemote === true && e.includesHotel === true));
-      if (present[0]) {
-        present[0] = { ...present[0],
-          name: 'Presencial',
-          id: 0,
-          status: 'not-selected' };
-        newOptions.push(present[0]);
-      };      
-      const online = ticketType.filter((e) => (e.isRemote === true));
-      if (online[0]) {
-        online[0] = { ...online[0],
-          name: 'Online',
-          id: 1,
-          status: 'not-selected' };
-        newOptions.push(present[0]);
-        setOptions(newOptions);
-      } 
-    }   
+    if (ticketType) {      
+      setOptions(ticketType);
+      let updatedPrices = [];
+      const noHotelOption = ticketType.filter(e => e.isRemote === false && e.includesHotel === false);
+      const remoteOption = ticketType.filter (e => e.isRemote === true);
+      const withHotelOption = ticketType.filter (e => e.isRemote === false && e.includesHotel === true);
+      updatedPrices = [noHotelOption[0].price, remoteOption[0].price, (withHotelOption[0].price - noHotelOption[0].price)];
+      setPrices(updatedPrices);
+    };
   }, []);
 
   function checkOption(target) {
-    let updatedOptions = [...options];
-    updatedOptions.map(option => option.status = 'not-selected');
-    updatedOptions[target.id].status = 'selected';
-    setModality(updatedOptions[target.id].isRemote);
-    setOptions(updatedOptions);
+    console.log(prices);
+    if (target.id === '0') {
+      setModality(true);
+    };
+    if (target.id === '1') {
+      setModality(false);
+    }
+    if (target.id === '2') {
+      setWithHotel(false);
+    }
+    if (target.id === '3') {
+      setWithHotel(true);
+    }
   }
 
   return (
@@ -48,17 +47,27 @@ export default function SelectTicketType() {
           <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
           <StyledTypography variant='h5' color='textSecondary' >Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <OptionBox>
-            {options.map(modality => <ModalityBox id={modality.id} color={modality.status} onClick={e => checkOption(e.currentTarget)}><h3>{modality.name}</h3>R$ {(modality.price/100).toString()}</ModalityBox>)}            
-          </OptionBox>
+            <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(prices[0]/100).toString()}</ModalityBox>
+            <ModalityBox id={1} color={!modality} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
+          </OptionBox>          
         </>  
         : 'Nada aqui'}
+      {modality ?
+        <>          
+          <StyledTypography variant='h5' color='textSecondary' >Ótimo! Agora escolha sua modalidade de hospedagem</StyledTypography>
+          <OptionBox>
+            <ModalityBox id={2} color={!withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Sem Hotel</h3>+ R$ 0</ModalityBox>
+            <ModalityBox id={3} color={withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Com Hotel</h3>+ R$ {(prices[2]/100).toString()}</ModalityBox>          
+          </OptionBox>          
+        </>  
+        : ''}
     </>
   );
 }
 
 const handleColorType = color => {
   switch (color) {
-  case 'selected':
+  case true:
     return '#FFEED2';      
   default:
     return '#FFFFFF';
@@ -67,7 +76,7 @@ const handleColorType = color => {
 
 const handleBorderColorType = color => {
   switch (color) {
-  case 'selected':
+  case true:
     return '#FFEED2';      
   default:
     return '#CECECE';
@@ -105,5 +114,6 @@ const ModalityBox = styled.div`
 const OptionBox = styled.div`
   display: flex;
   gap: 24px;
+  margin-bottom: 44px;
 `;
 
