@@ -3,12 +3,12 @@ import Typography from '@material-ui/core/Typography';
 import { useEffect, useState } from 'react';
 import useEnrollment from '../hooks/api/useEnrollment';
 import useTicketType from '../hooks/api/useTicketType';
+import useCreateTicket from '../hooks/api/useCreateTicket';
 
 export default function SelectTicketType() {
   const { enrollment } = useEnrollment();
   const { ticketType } = useTicketType();
   const [modality, setModality] = useState(null);
-  const [options, setOptions] = useState([]);
   const [prices, setPrices] = useState([]);
   const [withHotel, setWithHotel] = useState(null);
   const [isFinal, setIsFinal] = useState(null);
@@ -16,7 +16,6 @@ export default function SelectTicketType() {
 
   useEffect(() => {
     if (ticketType) {      
-      setOptions(ticketType);
       let updatedPrices = [];
       const noHotelOption = ticketType.filter(e => e.isRemote === false && e.includesHotel === false);
       const remoteOption = ticketType.filter (e => e.isRemote === true);
@@ -27,7 +26,6 @@ export default function SelectTicketType() {
   }, []);
 
   function checkOption(target) {
-    console.log(prices);
     if (target.id === '0') {
       setModality(true);
       if (withHotel) {
@@ -39,6 +37,7 @@ export default function SelectTicketType() {
     };
     if (target.id === '1') {
       setModality(false);
+      setWithHotel(false);
       setTotal(prices[1]);
       setIsFinal(true);
     }
@@ -55,7 +54,14 @@ export default function SelectTicketType() {
   }
 
   function placeReservation() {
-    console.log('OK');
+    const ticketTypeId = findTicketType();
+    console.log(ticketTypeId);
+    useCreateTicket({ ticketTypeId });
+  }
+
+  function findTicketType() {
+    const selectedTicketType = ticketType.filter(e => e.isRemote === !modality && e.includesHotel === withHotel);
+    return selectedTicketType[0].id;
   }
 
   return (
