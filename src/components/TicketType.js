@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useEnrollment from '../hooks/api/useEnrollment';
 import useTicketType from '../hooks/api/useTicketType';
 import useCreateTicket from '../hooks/api/useCreateTicket';
@@ -14,22 +14,18 @@ export default function SelectTicketType() {
   const [withHotel, setWithHotel] = useState(null);
   const [isFinal, setIsFinal] = useState(null);
   const [total, setTotal] = useState(0);
-  const { createTicketLoading, createTicket } = useCreateTicket();
-
-  useEffect(() => {
-    if (ticketType) {      
-      let updatedPrices = [];
-      const noHotelOption = ticketType.filter(e => e.isRemote === false && e.includesHotel === false);
-      const remoteOption = ticketType.filter (e => e.isRemote === true);
-      const withHotelOption = ticketType.filter (e => e.isRemote === false && e.includesHotel === true);
-      updatedPrices = [noHotelOption[0].price, remoteOption[0].price, (withHotelOption[0].price - noHotelOption[0].price)];
-      setPrices(updatedPrices);
-    };
-  }, []);
+  const { createTicket } = useCreateTicket();
 
   function checkOption(target) {  
+    let updatedPrices = [];
+    const noHotelOption = ticketType.filter(e => e.isRemote === false && e.includesHotel === false);
+    const remoteOption = ticketType.filter (e => e.isRemote === true);
+    const withHotelOption = ticketType.filter (e => e.isRemote === false && e.includesHotel === true);
+    updatedPrices = [noHotelOption[0].price, remoteOption[0].price, (withHotelOption[0].price - noHotelOption[0].price)];
+    setPrices(updatedPrices);
     if (target.id === '0') {
       setModality(true);
+      setIsFinal(false);
       if (withHotel) {
         setTotal(prices[0] + prices[2]);
       }
@@ -39,7 +35,7 @@ export default function SelectTicketType() {
     };
     if (target.id === '1') {
       setModality(false);
-      setWithHotel(false);
+      setWithHotel(null);
       setTotal(prices[1]);
       setIsFinal(true);
     }
@@ -67,20 +63,23 @@ export default function SelectTicketType() {
   }
 
   function findTicketType() {
-    const selectedTicketType = ticketType.filter(e => e.isRemote === !modality && e.includesHotel === withHotel);
+    let selectedTicketType = ticketType.filter(e => e.isRemote === !modality);
+    if (selectedTicketType.length > 1) {
+      selectedTicketType = selectedTicketType.filter(e => e.includesHotel === withHotel);
+    }
     return selectedTicketType[0].id;
   }
 
   return (
     <>
       {enrollment ? 
-        ticketType ?
+        ticketType ? 
           <>
             <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
             <HeadLiner>Primeiro, escolha sua modalidade de ingresso</HeadLiner>
             <OptionBox>
-              <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(prices[0]/100).toString()}</ModalityBox>
-              <ModalityBox id={1} color={modality===false} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
+              <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(ticketType.filter(e => e.isRemote === false && e.includesHotel === false)[0].price/100).toString()}</ModalityBox>
+              <ModalityBox id={1} color={modality===false} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(ticketType.filter(e => e.isRemote === true && e.includesHotel === false)[0].price/100).toString()}</ModalityBox>          
             </OptionBox>   
             {modality ?
               <>          
@@ -91,11 +90,11 @@ export default function SelectTicketType() {
                 </OptionBox>          
               </>  
               : ''}       
-          </> : 'Loading...'   
+          </> : 'Loading...' 
         : 'Você precisa se inscrever primeiro'}      
       {isFinal ?
         <>
-          <HeadLiner>{'Fechado! O total ficou em '} <h3> R$ {(total/100).toString()}</h3>. Agora é só confirmar:</HeadLiner>
+          <HeadLiner>{'Fechado! O total ficou em '}<h3>&nbsp;R$ {(total/100).toString()}</h3>. Agora é só confirmar:</HeadLiner>
           <Button onClick={placeReservation}>RESERVAR INGRESSO</Button>
         </>
         : ''}
