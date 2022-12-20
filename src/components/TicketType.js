@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import useEnrollment from '../hooks/api/useEnrollment';
 import useTicketType from '../hooks/api/useTicketType';
 import useCreateTicket from '../hooks/api/useCreateTicket';
+import { toast } from 'react-toastify';
 
 export default function SelectTicketType() {
   const { enrollment } = useEnrollment();
@@ -13,6 +14,7 @@ export default function SelectTicketType() {
   const [withHotel, setWithHotel] = useState(null);
   const [isFinal, setIsFinal] = useState(null);
   const [total, setTotal] = useState(0);
+  const { createTicketLoading, createTicket } = useCreateTicket();
 
   useEffect(() => {
     if (ticketType) {      
@@ -25,7 +27,7 @@ export default function SelectTicketType() {
     };
   }, []);
 
-  function checkOption(target) {
+  function checkOption(target) {  
     if (target.id === '0') {
       setModality(true);
       if (withHotel) {
@@ -53,10 +55,15 @@ export default function SelectTicketType() {
     }
   }
 
-  function placeReservation() {
+  async function placeReservation() {
     const ticketTypeId = findTicketType();
     console.log(ticketTypeId);
-    useCreateTicket({ ticketTypeId });
+    try {
+      await createTicket({ ticketTypeId });
+      toast('Ticket reservado com sucesso');
+    } catch (err) {
+      toast('Houve um erro ao processar as informações');
+    };
   }
 
   function findTicketType() {
@@ -67,24 +74,25 @@ export default function SelectTicketType() {
   return (
     <>
       {enrollment ? 
-        <>
-          <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
-          <HeadLiner>Primeiro, escolha sua modalidade de ingresso</HeadLiner>
-          <OptionBox>
-            <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(prices[0]/100).toString()}</ModalityBox>
-            <ModalityBox id={1} color={modality===false} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
-          </OptionBox>          
-        </>  
-        : 'Nada aqui'}
-      {modality ?
-        <>          
-          <HeadLiner>Ótimo! Agora escolha sua modalidade de hospedagem</HeadLiner>
-          <OptionBox>
-            <ModalityBox id={2} color={withHotel===false} onClick={e => checkOption(e.currentTarget)}><h3>Sem Hotel</h3>+ R$ 0</ModalityBox>
-            <ModalityBox id={3} color={withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Com Hotel</h3>+ R$ {(prices[2]/100).toString()}</ModalityBox>          
-          </OptionBox>          
-        </>  
-        : ''}
+        ticketType ?
+          <>
+            <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
+            <HeadLiner>Primeiro, escolha sua modalidade de ingresso</HeadLiner>
+            <OptionBox>
+              <ModalityBox id={0} color={modality} onClick={e => checkOption(e.currentTarget)}><h3>Presencial</h3>R$ {(prices[0]/100).toString()}</ModalityBox>
+              <ModalityBox id={1} color={modality===false} onClick={e => checkOption(e.currentTarget)}><h3>Online</h3>R$ {(prices[1]/100).toString()}</ModalityBox>          
+            </OptionBox>   
+            {modality ?
+              <>          
+                <HeadLiner>Ótimo! Agora escolha sua modalidade de hospedagem</HeadLiner>
+                <OptionBox>
+                  <ModalityBox id={2} color={withHotel===false} onClick={e => checkOption(e.currentTarget)}><h3>Sem Hotel</h3>+ R$ 0</ModalityBox>
+                  <ModalityBox id={3} color={withHotel} onClick={e => checkOption(e.currentTarget)}><h3>Com Hotel</h3>+ R$ {(prices[2]/100).toString()}</ModalityBox>          
+                </OptionBox>          
+              </>  
+              : ''}       
+          </> : 'Loading...'   
+        : 'Você precisa se inscrever primeiro'}      
       {isFinal ?
         <>
           <HeadLiner>{'Fechado! O total ficou em '} <h3> R$ {(total/100).toString()}</h3>. Agora é só confirmar:</HeadLiner>
