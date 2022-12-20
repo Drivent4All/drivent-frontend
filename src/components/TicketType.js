@@ -1,42 +1,43 @@
 import styled from 'styled-components';
 import Typography from '@material-ui/core/Typography';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useEnrollment from '../hooks/api/useEnrollment';
+import useTicketType from '../hooks/api/useTicketType';
 
 export default function SelectTicketType() {
   const { enrollment } = useEnrollment();
+  const { ticketType } = useTicketType();
   const [modality, setModality] = useState(null);
-  const [options, setOptions] = useState([
-    { id: 1,
-      name: 'Presencial',
-      price: 150,
-      status: 'not-selected',
-      isRemote: false },
-    { name: 'Online',
-      id: 2,
-      price: 100,
-      status: 'not-selected',
-      isRemote: true }
-  ]);
+  const [options, setOptions] = useState([]);
+
+  useEffect(() => {
+    if (ticketType) {
+      let newOptions = [];
+      const present = ticketType.filter((e) => (e.isRemote === true && e.includesHotel === true));
+      if (present[0]) {
+        present[0] = { ...present[0],
+          name: 'Presencial',
+          id: 0,
+          status: 'not-selected' };
+        newOptions.push(present[0]);
+      };      
+      const online = ticketType.filter((e) => (e.isRemote === true));
+      if (online[0]) {
+        online[0] = { ...online[0],
+          name: 'Online',
+          id: 1,
+          status: 'not-selected' };
+        newOptions.push(present[0]);
+        setOptions(newOptions);
+      } 
+    }   
+  }, []);
 
   function checkOption(target) {
-    let index = target.id-1;
-    if (target.id === 1) {
-      setModality(false);
-    }
-    if (target.id === 2) {
-      setModality(true);
-    }
-
-    let updatedOptions = [...options];       
-    if (index === 0) {
-      updatedOptions[index].status = 'selected';
-      updatedOptions[1].status = 'not-selected';
-    }
-    if (index === 1) {
-      updatedOptions[index].status = 'selected';
-      updatedOptions[0].status = 'not-selected';
-    }
+    let updatedOptions = [...options];
+    updatedOptions.map(option => option.status = 'not-selected');
+    updatedOptions[target.id].status = 'selected';
+    setModality(updatedOptions[target.id].isRemote);
     setOptions(updatedOptions);
   }
 
@@ -47,7 +48,7 @@ export default function SelectTicketType() {
           <StyledTypography variant='h4'>Ingresso e Pagamento</StyledTypography>
           <StyledTypography variant='h5' color='textSecondary' >Primeiro, escolha sua modalidade de ingresso</StyledTypography>
           <OptionBox>
-            {options.map(modality => <ModalityBox id={modality.id} color={modality.status} onClick={e => checkOption(e.currentTarget)}><h3>{modality.name}</h3>R${modality.price.toString()}</ModalityBox>)}            
+            {options.map(modality => <ModalityBox id={modality.id} color={modality.status} onClick={e => checkOption(e.currentTarget)}><h3>{modality.name}</h3>R$ {(modality.price/100).toString()}</ModalityBox>)}            
           </OptionBox>
         </>  
         : 'Nada aqui'}
