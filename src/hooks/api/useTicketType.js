@@ -7,10 +7,10 @@ export default function useTicketType() {
   const token = useToken();
 
   const {
-    data: ticketType,
+    act: ticketType,
     loading: ticketTypeLoading,
     error: ticketTypeError,
-  } = useAsync(() => ticketTypeApi.getTicketType(token));
+  } = useAsync(() => ticketTypeApi.getTicketType(token), false);
 
   return {
     ticketType,
