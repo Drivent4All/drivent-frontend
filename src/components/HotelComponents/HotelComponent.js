@@ -16,6 +16,15 @@ function formatString(string) {
   return formatedString;
 };
 
+function getVacancyCount(rooms) {
+  let count = 0;
+  rooms.forEach(room => {
+    count = count + Number(room.capacity);
+  });
+
+  return count;
+};
+
 function getAccomodationTypes(roomList) {
   let accomodations = {
     single: false,
@@ -51,6 +60,7 @@ const Hotel = ({ hotel }) => {
       <h3>Tipos de acomodação:</h3>
       {room ? <p>{getAccomodationTypes(room.Rooms)}</p> : <></>}
       <h3>Vagas disponíveis:</h3>
+      {room ? <p>{getVacancyCount(room.Rooms)}</p> : <></>}
     </HotelContainer>
   );
 };
