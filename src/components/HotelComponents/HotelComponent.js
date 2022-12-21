@@ -1,0 +1,150 @@
+import styled from 'styled-components';
+import { useEffect } from 'react';
+
+import useHotel from '../../hooks/api/useHotel';
+import useRoom from '../../hooks/api/useRoom';
+
+function formatString(string) {
+  let array = string.split(' ');
+
+  let formatedString = array.map((letter, index) => {
+    if(index === array.length-1) return ` e ${letter}`;
+    else if(index === 0) return letter;
+    else return `, ${letter}`;
+  });
+  
+  return formatedString;
+};
+
+function getVacancyCount(rooms) {
+  let count = 0;
+  rooms.forEach(room => {
+    count = count + Number(room.capacity);
+  });
+
+  return count;
+};
+
+function getAccomodationTypes(roomList) {
+  let accomodations = {
+    single: false,
+    double: false,
+    triple: false
+  };
+
+  roomList.forEach(room => {
+    if(room.capacity > 2) accomodations.triple = true; 
+    if(room.capacity > 1) accomodations.double = true;
+    if(room.capacity > 0) accomodations.single = true;
+  });
+
+  let string = (accomodations.single ? 'Single' : '') + 
+    (accomodations.double ? ' Double' : '') + 
+    (accomodations.triple ? ' Triple' : '')
+  ;
+
+  return formatString(string);
+};
+
+const Hotel = ({ hotel }) => {
+  const { room, getRoom } = useRoom(hotel.id);
+
+  useEffect(async() => {
+    await getRoom();
+  }, []);
+
+  return (
+    <HotelContainer>
+      <img src={hotel.image} alt="hotelImg" />
+      <h1>{hotel.name}</h1>
+      <h3>Tipos de acomodação:</h3>
+      {room ? <p>{getAccomodationTypes(room.Rooms)}</p> : <></>}
+      <h3>Vagas disponíveis:</h3>
+      {room ? <p>{getVacancyCount(room.Rooms)}</p> : <></>}
+    </HotelContainer>
+  );
+};
+
+export const HotelComponent = () => {
+  const { hotel, getHotel } = useHotel();
+
+  useEffect(async() => {
+    await getHotel();
+  }, []);
+
+  return (
+    <Hotels>
+      <p>Primeiro, escolha seu hotel</p>
+      <div>
+        {hotel ? 
+          hotel.map((hotel, index) => <Hotel hotel={hotel} key={index} />)
+          :
+          <></>
+        }
+      </div>
+    </Hotels>
+  );
+};
+
+const Hotels = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  p{
+    color: #8E8E8E;
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+
+  &>div{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+  }
+`;
+
+const HotelContainer = styled.div`
+  width: 196px;
+  height: 264px;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: #EBEBEB;
+  margin-right: 20px;
+  margin-bottom: 10px;
+
+  img{
+    width: 168px;
+    height: 109px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+
+  h1{
+    color: #343434;
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  h3{
+    font-size: 12px;
+    font-weight: 700;
+    color: #3C3C3C;
+    margin-top: 10px;
+  }
+
+  p{
+    font-size: 12px;
+    font-weight: 400;
+    color: #3C3C3C;
+    margin-top: 5px;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+`;
