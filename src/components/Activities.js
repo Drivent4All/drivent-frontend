@@ -1,7 +1,7 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
 
-export default function Activities() {
+export default function ActivitiesComponent() {
   return(
     <> 
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
@@ -26,7 +26,7 @@ margin-right: 1rem;
 display: flex;
 justify-content: center;
 align-items: center;
-box-shadow: 0 3px 15px 2 px rgba(0,0,0,0.1);
+box-shadow: 0 3px 15px 2px rgba(0,0,0,0.1);
 `;
 
 const DaysBox = styled.div`

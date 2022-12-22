@@ -1,14 +1,14 @@
-import { Typography } from '@material-ui/core';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import ActivitiesComponent from '../../../components/Activities';
 import useEvent from '../../../hooks/api/useEvent';
 import useTicket from '../../../hooks/api/useTicket';
 export default function Activities() {
   const { ticket } = useTicket();
   const { event } = useEvent();
   const [ userTicket, setUserTicket] = useState([]);
-  const [ isRemote, setIsRemote ] = useState([]);
+  const [ isRemote, setIsRemote ] = useState(false);
   const [ isPayed, setIsPayed ] = useState(false);
 
   useEffect(async() => {
@@ -21,15 +21,16 @@ export default function Activities() {
       setIsPayed(true);
     }
   }, []);
-
+  // 
   return (
     <>
       {isPayed? 
-        isRemote? 
-          <WarnMessage>Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.</WarnMessage> :
-          <WarnMessage>PAGO</WarnMessage> : 
-        <WarnMessage>Você precisa ter confirmado pagamento antes
-        de fazer a escolha de atividades</WarnMessage>
+        isRemote?
+          <WarnMessage>Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.</WarnMessage> 
+          : 
+          <ActivitiesComponent/> 
+        : 
+        <WarnMessage>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</WarnMessage>
       }
     </>
   );
