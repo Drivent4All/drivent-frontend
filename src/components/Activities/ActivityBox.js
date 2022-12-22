@@ -13,6 +13,7 @@ export default function ActivityBox() {
             duration={'09:00 - 10:00'}
             isFull={false}
             spaceAvaliable={27}
+            isSubscribed={true}
           />
           <SingleActivity
             title={'Minecraft: montando o PC ideal'}

@@ -1,38 +1,53 @@
 import styled from 'styled-components';
 import eventFull from '../../assets/images/ant-design_close-circle-outlined.png';
 import eventNotFull from '../../assets/images/pepicons_enter.png';
+import subscribed from '../../assets/images/akar-icons_circle-check.png';
 
-export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size }) {
+export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed }) {
   return (
-    <Wrapper isFull={isFull} size={size}>
+    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed}>
       <div className="left">
         <h1>{title}</h1>
         <h2>{duration}</h2>
       </div>
       <div className="middle"></div>
       <div className="right">
-        <img src={isFull ? eventFull : eventNotFull} />
-        <p> {isFull ? 'esgotado' : `${spaceAvaliable} vagas`}</p>
+        <img src={isFull ? eventFull : isSubscribed ? subscribed : eventNotFull} alt='icon' />
+        <p> {isFull ? 'esgotado' : isSubscribed ? 'Inscrito' : `${spaceAvaliable} vagas`}</p>
       </div>
     </Wrapper>
   );
 }
 
 const Wrapper = styled.div`
-  background-color: #f1f1f1;
+  background-color: ${(props) => (props.isSubscribed ? '#D0FFDB' : '#f1f1f1')};
   border-radius: 5px;
+  height: ${(props) => (props.size === 'double' ? '11rem' : '5rem')};
   min-height: ${(props) => (props.size === 'double' ? '11rem' : '5rem')};
   padding: 0.5rem;
   font-size: 13px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  transition: all 0.5s;
+  :hover {
+    cursor: pointer;
+    filter: brightness(0.95);
+    scale: 1.05;
+  }
+  :active {
+    scale: 1;
+  }
 
   .left {
     min-width: 75%;
     max-width: 75%;
     h1 {
       margin-bottom: 7px;
+      font-size: 11px;
+    }
+    h2 {
+      font-size: 11px;
     }
   }
   .middle {
@@ -42,7 +57,7 @@ const Wrapper = styled.div`
   }
   .right {
     width: 20%;
-    height: 50px;
+    height: 100%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
