@@ -4,7 +4,7 @@ export default function SingleActivity({ title, duration }) {
   return (
     <Wrapper>
       <div className="left">
-        <h1>Mine</h1>
+        <h1>{title}</h1>
         <h2>{duration}</h2>
       </div>
       <div className="middle"></div>
@@ -22,13 +22,21 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
 
+  .left {
+    min-width: 65%;
+    max-width: 65%;
+  }
   .middle {
     background-color: lightgray;
     width: 2px;
     height: 50px;
   }
+  .right {
+    padding: 1rem;
+  }
 
   h1 {
     font-weight: bold;
+    font-size: 10px;
   }
 `;

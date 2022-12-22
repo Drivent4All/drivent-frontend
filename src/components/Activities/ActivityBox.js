@@ -28,17 +28,18 @@ export default function ActivityBox() {
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-around;
-  max-width: 100vw;
-
   > div {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 34%;
   }
+
   .column {
     border: 2px solid #d7d7d7;
     padding: 0.5rem;
-    width: 15.9rem;
+    min-width: 100%;
+    max-width: 100%;
     min-height: 40vh;
   }
 `;
