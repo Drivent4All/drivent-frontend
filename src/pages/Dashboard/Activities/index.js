@@ -31,7 +31,6 @@ export default function Activities() {
         <WarnMessage>Você precisa ter confirmado pagamento antes
         de fazer a escolha de atividades</WarnMessage>
       }
-     
     </>
   );
 }
