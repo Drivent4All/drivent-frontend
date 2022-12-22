@@ -8,12 +8,31 @@ export default function ActivityBox() {
       <div className="left">
         <StyledTypography variant="h5">Auditório Principal</StyledTypography>
         <ul className="column">
-          <SingleActivity title={'Minecraft: montando o PC ideal'} duration={'09:00 - 10:00'} />
+          <SingleActivity
+            title={'Minecraft: montando o PC ideal '}
+            duration={'09:00 - 10:00'}
+            isFull={false}
+            spaceAvaliable={27}
+          />
+          <SingleActivity
+            title={'Minecraft: montando o PC ideal'}
+            duration={'09:00 - 10:00'}
+            isFull={true}
+            spaceAvaliable={27}
+          />
         </ul>
       </div>
       <div className="middle">
         <StyledTypography variant="h5">Auditório Principal</StyledTypography>
-        <ul className="column"></ul>
+        <ul className="column">
+          <SingleActivity
+            title={'Minecraft: montando o PC ideal'}
+            duration={'09:00 - 10:00'}
+            isFull={false}
+            spaceAvaliable={27}
+            size="double"
+          />
+        </ul>
       </div>
 
       <div className="right">
