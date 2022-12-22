@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import ActivitiesComponent from '../../../components/Activities';
+import ActivitiesComponent from '../../../components/Activities/ActivitiesComponent';
 import useEvent from '../../../hooks/api/useEvent';
 import useTicket from '../../../hooks/api/useTicket';
 export default function Activities() {
   const { ticket } = useTicket();
-  const { event } = useEvent();
   const [ userTicket, setUserTicket] = useState([]);
   const [ isRemote, setIsRemote ] = useState(false);
   const [ isPayed, setIsPayed ] = useState(false);
