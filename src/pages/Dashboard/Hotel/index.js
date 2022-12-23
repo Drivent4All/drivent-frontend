@@ -45,7 +45,7 @@ export default function Hotel() {
             (!ticket.TicketType.includesHotel) ?
               <LabelMessage>Sua modalidade de ingresso não inclui hospedagem<br/>Prossiga para a escolha de atividades</LabelMessage>
               :
-              <HotelComponent setBooking={setUserBooking} />
+              <HotelComponent setBooking={setUserBooking} setUserRoom={setUserRoom} setHotel={setHotel} />
               
         )
         :

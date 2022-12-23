@@ -1,9 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
+import useBooking from '../hooks/api/useBooking';
+import useGetRoom from '../hooks/api/useGetRoom';
+
 import { HotelComponent } from '../components/HotelComponents/HotelComponentChange';
 
-export default function BookingConfirmation({ booking, setBooking, hotel, bookings, room }) {  
+export default function BookingConfirmation({ booking, setBooking, bookings }) {  
   const [changeRoom, setChangeRoom] = useState(false);
+
+  const [hotel, setHotel] = useState();
+  const [room, setRoom] = useState();
+
+  const { getRoom } = useGetRoom();
+  const { getBooking } = useBooking();
+
+  useEffect(async() => {
+    try{
+      const booking = await getBooking();
+      const room = await getRoom(booking.Room.id);
+      setHotel(room.Hotel);
+      setRoom(room);
+      setBooking(booking);
+    }catch(err) {}
+  }, []);
 
   function getAccomodationType(room) {
     let accomodation;
@@ -33,14 +53,17 @@ export default function BookingConfirmation({ booking, setBooking, hotel, bookin
       :
       <>
         <HeadLiner>Você já escolheu seu quarto:</HeadLiner>
-        <HotelContainer>
-          <img src={hotel.image} alt="hotelImg" />
-          <h1>{hotel.name}</h1>
-          <h3>Quarto reservado</h3>
-          <p>{room.name} ({getAccomodationType(room)})</p>
-          <h3>Pessoas no seu quarto</h3>
-          <p>Você {getOtherOccupants(bookings)}</p>
-        </HotelContainer>
+        {hotel && room ?
+          <HotelContainer>
+            <img src={hotel.image} alt="hotelImg" />
+            <h1>{hotel.name}</h1>
+            <h3>Quarto reservado</h3>
+            <p>{room.name} ({getAccomodationType(room)})</p>
+            <h3>Pessoas no seu quarto</h3>
+            <p>Você {getOtherOccupants(bookings)}</p>
+          </HotelContainer>
+          : <></>
+        }
         <Button onClick={handleChangeRoom}>TROCAR DE QUARTO</Button>
       </>
     }

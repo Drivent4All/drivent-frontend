@@ -78,7 +78,7 @@ const Hotel = ({ hotel, selectedHotel, onClick }) => {
   );
 };
 
-export const HotelComponent = ({ setBooking }) => {
+export const HotelComponent = ({ setBooking, setHotel, setUserRoom }) => {
   const { hotel, getHotel } = useHotel();
   const [ selectedHotel, setSelectedHotel ] = useState();
 
@@ -100,7 +100,7 @@ export const HotelComponent = ({ setBooking }) => {
         <>
           <h2>Ótima pedida! Agora escolha seu quarto:</h2>
           {selectedHotel ?
-            <HotelsRoom hotel={selectedHotel} setBooking={setBooking} />
+            <HotelsRoom hotel={selectedHotel} setBooking={setBooking} setUserRoom={setUserRoom} setHotel={setHotel} />
             :
             <></>
           }
