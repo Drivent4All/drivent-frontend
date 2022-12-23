@@ -48,7 +48,7 @@ function getAccomodationTypes(roomList) {
   return formatString(string);
 };
 
-const Hotel = ({ hotel, selectedHotel, setSelectedHotel, onClick }) => {
+const Hotel = ({ hotel, selectedHotel, onClick }) => {
   const { room, getRoom } = useRoom(hotel.id);
   const [ selected, setSelected ] = useState(false);
 
@@ -78,7 +78,7 @@ const Hotel = ({ hotel, selectedHotel, setSelectedHotel, onClick }) => {
   );
 };
 
-export const HotelComponent = () => {
+export const HotelComponent = ({ setBooking }) => {
   const { hotel, getHotel } = useHotel();
   const [ selectedHotel, setSelectedHotel ] = useState();
 
@@ -88,7 +88,7 @@ export const HotelComponent = () => {
 
   return (
     <Hotels>
-      <p>Primeiro, escolha seu hotel</p>
+      <h2>Primeiro, escolha seu hotel</h2>
       <div>
         {hotel ? 
           hotel.map((hotel, index) => <Hotel onClick={() => setSelectedHotel(hotel)} hotel={hotel} key={index} selectedHotel={selectedHotel} setSelectedHotel={setSelectedHotel} />)
@@ -98,9 +98,9 @@ export const HotelComponent = () => {
       </div>
       {selectedHotel ?
         <>
-          <p>Ótima pedida! Agora escolha seu quarto:</p>
+          <h2>Ótima pedida! Agora escolha seu quarto:</h2>
           {selectedHotel ?
-            <HotelsRoom hotel={selectedHotel} />
+            <HotelsRoom hotel={selectedHotel} setBooking={setBooking} />
             :
             <></>
           }
@@ -118,7 +118,7 @@ const Hotels = styled.div`
   display: flex;
   flex-direction: column;
 
-  p{
+  h2{
     color: #8E8E8E;
     font-size: 20px;
     font-weight: 400;
