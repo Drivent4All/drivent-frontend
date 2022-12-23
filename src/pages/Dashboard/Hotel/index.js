@@ -9,18 +9,28 @@ import useBooking from '../../../hooks/api/useBooking';
 import { HotelComponent } from '../../../components/HotelComponents/HotelComponent';
 import { useState } from 'react';
 import BookingConfirmation from '../../../components/BookingConfirmation';
+import useGetRoom from '../../../hooks/api/useGetRoom';
 
 export default function Hotel() {
   const { ticket } = useTicket();
   const { getBooking } = useBooking();
   const [userTicket, setUserTicket] = useState();
   const [userBooking, setUserBooking] = useState();
+  const [userRoom, setUserRoom] = useState(null);
+  const [hotel, setHotel] = useState(null);
+  const [bookings, setBookings] = useState(1);
+  const { getRoom } = useGetRoom();
 
   useEffect(async() => {
     try{
       const userTicket = await ticket();
       setUserTicket(userTicket);
       const booking = await getBooking();
+      const roomInfo = booking.Room;
+      const room = await getRoom(roomInfo.id);
+      setUserRoom(room);
+      setHotel(room.Hotel);
+      setBookings(room.Booking.length);
       setUserBooking(booking);
     }catch(error) {}
   }, []);
@@ -35,10 +45,8 @@ export default function Hotel() {
             (!ticket.TicketType.includesHotel) ?
               <LabelMessage>Sua modalidade de ingresso não inclui hospedagem<br/>Prossiga para a escolha de atividades</LabelMessage>
               :
-              !userBooking ? 
-                <HotelComponent setBooking={setUserBooking} />
-                :
-                <LabelMessage>Você já escolheu seu quarto:</LabelMessage>
+              <HotelComponent setBooking={setUserBooking} />
+              
         )
         :
         (<LabelMessage>Você precisa ter confirmado pagamento antes<br/>de fazer a escolha de hospedagem</LabelMessage>)
@@ -50,7 +58,7 @@ export default function Hotel() {
     <BookingPage>
       <Title>Escolha de hotel e quarto</Title>
       { userBooking ?
-        <BookingConfirmation booking={userBooking} />
+        <BookingConfirmation booking={userBooking} setBooking={setUserBooking} room={userRoom} hotel={hotel} bookings={bookings}/>
         : <>
           {ticket ?
             <BookingLabel ticket={userTicket}/>
