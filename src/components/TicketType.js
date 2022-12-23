@@ -6,7 +6,7 @@ import useTicketType from '../hooks/api/useTicketType';
 import useCreateTicket from '../hooks/api/useCreateTicket';
 import { toast } from 'react-toastify';
 
-export default function SelectTicketType() {
+export default function SelectTicketType({ setHasTicket }) {
   const { enrollment } = useEnrollment();
   const { ticketType } = useTicketType();
   const [modality, setModality] = useState(null);
@@ -62,7 +62,7 @@ export default function SelectTicketType() {
     try {
       await createTicket({ ticketTypeId });
       toast('Ticket reservado com sucesso');
-      window.location.reload();
+      setHasTicket(true);
     } catch (err) {
       toast('Houve um erro ao processar as informações');
     };

@@ -8,17 +8,17 @@ export default function Payment() {
   const [hasTicket, setHasTicket] = useState(false);
 
   useEffect(async() => {
-    const userTicket = await ticket();
-    if (userTicket) {
-      setHasTicket(true);
-    }    
+    try{
+      const userTicket = await ticket();
+      setHasTicket(userTicket);
+    }catch(error) {}
   }, []);
 
   return (
     <>
       { hasTicket ?
         <MakePayment /> :
-        <SelectTicketType />
+        <SelectTicketType setHasTicket={setHasTicket}/>
       }
     </>    
   );
