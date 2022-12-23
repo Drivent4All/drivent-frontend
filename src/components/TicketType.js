@@ -59,7 +59,6 @@ export default function SelectTicketType() {
 
   async function placeReservation() {
     const ticketTypeId = findTicketType();
-    console.log(ticketTypeId.value);
     try {
       await createTicket({ ticketTypeId });
       toast('Ticket reservado com sucesso');
