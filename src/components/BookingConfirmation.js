@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import styled from 'styled-components';
+import { HotelComponent } from '../components/HotelComponents/HotelComponentChange';
 
-export default function BookingConfirmation({ booking, setBooking, hotel, bookings, room }) {   
+export default function BookingConfirmation({ booking, setBooking, hotel, bookings, room }) {  
+  const [changeRoom, setChangeRoom] = useState(false);
+
   function getAccomodationType(room) {
     let accomodation;
     if (room.capacity === 1) accomodation = 'single';
@@ -19,22 +23,28 @@ export default function BookingConfirmation({ booking, setBooking, hotel, bookin
     return occupants;
   }
 
-  function changeRoom() {
-    setBooking(null);
+  function handleChangeRoom() {
+    setChangeRoom(true);
   }
 
   return (
-    <>
-      <HeadLiner>Você já escolheu seu quarto:</HeadLiner>
-      <HotelContainer>
-        <img src={hotel.image} alt="hotelImg" />
-        <h1>{hotel.name}</h1>
-        <h3>Quarto reservado</h3>
-        <p>{room.name} ({getAccomodationType(room)})</p>
-        <h3>Pessoas no seu quarto</h3>
-        <p>Você {getOtherOccupants(bookings)}</p>
-      </HotelContainer>
-      <Button onClick={changeRoom}>TROCAR DE QUARTO</Button>
+    <>{ changeRoom ?
+      <HotelComponent setBooking={setBooking} bookingId={booking.id} setChangeRoom={setChangeRoom}/>
+      :
+      <>
+        <HeadLiner>Você já escolheu seu quarto:</HeadLiner>
+        <HotelContainer>
+          <img src={hotel.image} alt="hotelImg" />
+          <h1>{hotel.name}</h1>
+          <h3>Quarto reservado</h3>
+          <p>{room.name} ({getAccomodationType(room)})</p>
+          <h3>Pessoas no seu quarto</h3>
+          <p>Você {getOtherOccupants(bookings)}</p>
+        </HotelContainer>
+        <Button onClick={handleChangeRoom}>TROCAR DE QUARTO</Button>
+      </>
+    }
+      
     </>
   );
 }

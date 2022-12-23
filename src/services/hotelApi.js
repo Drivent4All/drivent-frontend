@@ -46,7 +46,15 @@ export async function getRoom(token, roomId) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response.data);
+  return response.data;
+}
+
+export async function changeBooking(token, body, bookingId) {
+  const response = await api.put(`/booking/${bookingId}`, body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response.data;
 }
 //
