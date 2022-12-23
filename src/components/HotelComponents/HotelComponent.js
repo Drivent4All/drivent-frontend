@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { useEffect } from 'react';
+import { useState } from 'react';
 
 import useHotel from '../../hooks/api/useHotel';
 import useRoom from '../../hooks/api/useRoom';
+import { HotelsRoom } from './HotelRooms';
 
 function formatString(string) {
   let array = string.split(' ');
@@ -19,7 +21,7 @@ function formatString(string) {
 function getVacancyCount(rooms) {
   let count = 0;
   rooms.forEach(room => {
-    count = count + Number(room.capacity);
+    count = count + (Number(room.capacity) - (room.Booking.length));
   });
 
   return count;
@@ -46,15 +48,26 @@ function getAccomodationTypes(roomList) {
   return formatString(string);
 };
 
-const Hotel = ({ hotel }) => {
+const Hotel = ({ hotel, selectedHotel, onClick }) => {
   const { room, getRoom } = useRoom(hotel.id);
+  const [ selected, setSelected ] = useState(false);
 
   useEffect(async() => {
     await getRoom();
   }, []);
 
+  useEffect(() => {
+    if(selectedHotel) {
+      if(selectedHotel.id === hotel.id) {
+        setSelected(true);
+      }else{
+        setSelected(false);
+      }
+    }
+  }, [selectedHotel]);
+
   return (
-    <HotelContainer>
+    <HotelContainer onClick={onClick} selected={selected} >
       <img src={hotel.image} alt="hotelImg" />
       <h1>{hotel.name}</h1>
       <h3>Tipos de acomodação:</h3>
@@ -65,8 +78,9 @@ const Hotel = ({ hotel }) => {
   );
 };
 
-export const HotelComponent = () => {
+export const HotelComponent = ({ setBooking }) => {
   const { hotel, getHotel } = useHotel();
+  const [ selectedHotel, setSelectedHotel ] = useState();
 
   useEffect(async() => {
     await getHotel();
@@ -74,14 +88,26 @@ export const HotelComponent = () => {
 
   return (
     <Hotels>
-      <p>Primeiro, escolha seu hotel</p>
+      <h2>Primeiro, escolha seu hotel</h2>
       <div>
         {hotel ? 
-          hotel.map((hotel, index) => <Hotel hotel={hotel} key={index} />)
+          hotel.map((hotel, index) => <Hotel onClick={() => setSelectedHotel(hotel)} hotel={hotel} key={index} selectedHotel={selectedHotel} setSelectedHotel={setSelectedHotel} />)
           :
           <></>
         }
       </div>
+      {selectedHotel ?
+        <>
+          <h2>Ótima pedida! Agora escolha seu quarto:</h2>
+          {selectedHotel ?
+            <HotelsRoom hotel={selectedHotel} setBooking={setBooking} />
+            :
+            <></>
+          }
+        </> 
+        :
+        <></>
+      }
     </Hotels>
   );
 };
@@ -92,7 +118,7 @@ const Hotels = styled.div`
   display: flex;
   flex-direction: column;
 
-  p{
+  h2{
     color: #8E8E8E;
     font-size: 20px;
     font-weight: 400;
@@ -103,6 +129,7 @@ const Hotels = styled.div`
     display: flex;
     width: 100%;
     flex-direction: row;
+    margin-bottom: 30px;
   }
 `;
 
@@ -111,7 +138,7 @@ const HotelContainer = styled.div`
   height: 264px;
   padding: 15px;
   border-radius: 10px;
-  background-color: #EBEBEB;
+  background-color: ${props => props.selected ? '#FFEED2' : '#F1F1F1'};
   margin-right: 20px;
   margin-bottom: 10px;
 
