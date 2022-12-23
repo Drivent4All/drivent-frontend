@@ -5,25 +5,24 @@ import {
   LabelMessage
 } from './styles';
 import useTicket from '../../../hooks/api/useTicket';
+import useBooking from '../../../hooks/api/useBooking';
 import { HotelComponent } from '../../../components/HotelComponents/HotelComponent';
 import { useState } from 'react';
-import useBooking from '../../../hooks/api/useBooking';
 import BookingConfirmation from '../../../components/BookingConfirmation';
 
 export default function Hotel() {
   const { ticket } = useTicket();
-  const { booking } = useBooking();
+  const { getBooking } = useBooking();
   const [userTicket, setUserTicket] = useState();
   const [userBooking, setUserBooking] = useState();
 
   useEffect(async() => {
-    const userTicket = await ticket();
-    setUserTicket(userTicket);
-  }, []);
-
-  useEffect(async() => {
-    const userBooking = await booking();
-    setUserBooking(userBooking);
+    try{
+      const userTicket = await ticket();
+      setUserTicket(userTicket);
+      const booking = await getBooking();
+      setUserBooking(booking);
+    }catch(error) {}
   }, []);
 
   const BookingLabel = ({ ticket }) => {
@@ -36,7 +35,10 @@ export default function Hotel() {
             (!ticket.TicketType.includesHotel) ?
               <LabelMessage>Sua modalidade de ingresso não inclui hospedagem<br/>Prossiga para a escolha de atividades</LabelMessage>
               :
-              <HotelComponent />
+              !userBooking ? 
+                <HotelComponent setBooking={setUserBooking} />
+                :
+                <LabelMessage>Você já escolheu seu quarto:</LabelMessage>
         )
         :
         (<LabelMessage>Você precisa ter confirmado pagamento antes<br/>de fazer a escolha de hospedagem</LabelMessage>)
@@ -47,7 +49,7 @@ export default function Hotel() {
   return (
     <BookingPage>
       <Title>Escolha de hotel e quarto</Title>
-      { booking ?
+      { userBooking ?
         <BookingConfirmation booking={userBooking} />
         : <>
           {ticket ?
