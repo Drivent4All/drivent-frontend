@@ -6,7 +6,7 @@ import useRoom from '../../hooks/api/useRoom';
 import useCreateBooking from '../../hooks/api/useCreateBooking';
 import { Room } from './Room';
 
-export const HotelsRoom = ({ hotel, setBooking }) => {
+export const HotelsRoom = ({ hotel, setBooking, setUserRoom, setHotel }) => {
   const { createBooking } = useCreateBooking();
   const { room, getRoom } = useRoom(hotel.id);
 
@@ -24,6 +24,8 @@ export const HotelsRoom = ({ hotel, setBooking }) => {
     try {
       const booking = await createBooking(body);
       toast('Quarto reservado com sucesso!');
+      setHotel(hotel);
+      setUserRoom(selectedRoom);
       setBooking(booking);
     } catch (err) {
       toast('Não foi possível salvar suas informações!');
