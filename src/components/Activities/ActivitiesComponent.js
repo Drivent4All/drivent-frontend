@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import useEvent from '../../hooks/api/useEvent';
 import ActivityBox from './ActivityBox';
 import Day from './Day';
+import useGetActivitiesDates from '../../hooks/api/useGetActivitiesDates';
+import { useEffect } from 'react';
 
 export default function ActivitiesComponent() {
   const { event } = useEvent();
@@ -11,6 +13,26 @@ export default function ActivitiesComponent() {
   const handleSelected = (value) => {
     setSelected(value);
   };
+  const { activities, getActivitiesDates } = useGetActivitiesDates();
+  const [datesDisplay, setDatesDisplay] = useState();
+
+  useEffect(async() => {
+    const dates = await getActivitiesDates();
+    console.log(dates);
+    let formattedDates = [];
+    for (let date of dates) {
+      const newDate = new Date(date.date);
+      const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
+      const formattedDate = newDate.toLocaleDateString('pt-BR', options);
+      formattedDates.push(formattedDate);
+    }
+    setDatesDisplay(formattedDates);
+  }, []);
+
+  function removeSuffix(weekday) {
+    const index = weekday.indexOf('-');
+    return index !== -1 ? weekday.substring(0, index) : weekday;
+  }
 
   return (
     <>
@@ -19,9 +41,7 @@ export default function ActivitiesComponent() {
         <h3>{selected ? '' : 'Primeiro, filtre pelo dia do evento'} </h3>
       </Container>
       <DaysBox>
-        <Day title="Sexta, 22/10" value={selected} handleSelected={handleSelected} />
-        <Day title="Sab, 22/10" value={selected} handleSelected={handleSelected} />
-        <Day title="Dom, 22/10" value={selected} handleSelected={handleSelected} />
+        {datesDisplay.map((day, index) => <Day id={index} title={day} value={selected} handleSelected={handleSelected}/>)}
       </DaysBox>
       {selected ? <ActivityBox /> : ''}
     </>
