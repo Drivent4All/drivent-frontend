@@ -1,46 +1,48 @@
 import { Typography } from '@material-ui/core';
 import styled from 'styled-components';
+import useGetActivitiesByDay from '../../hooks/api/useGetActivitiesByDay';
+import { useEffect, useState } from 'react';
 import SingleActivity from './SingleActivity';
 
-export default function ActivityBox() {
+export default function ActivityBox({ day }) {
+  const date = day.postDate.toString();
+  const { getActivities } = useGetActivitiesByDay();
+  const [activitiesList, setActivitiesList] = useState([]);
+  const [activitiesInfo, setActivitiesInfo] = useState({});
+
+  useEffect(async() => {
+    try { 
+      const activities = await getActivities(date);
+      const grouped = activities.reduce((acc, curr) => {
+        const key = curr.place;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(curr);
+        return acc;
+      }, {});      
+      console.log(Object.keys(grouped));   
+      setActivitiesList(Object.keys(grouped));
+      setActivitiesInfo(grouped);
+    }
+    catch (error) {
+      console.log(error.response);
+    }
+  }, [day]);
+
   return (
     <Wrapper>
-      <div className="left">
-        <StyledTypography variant="h5">Auditório Principal</StyledTypography>
+      {activitiesList.map((activity) =>  <div >
+        <StyledTypography variant="h5">{activity}</StyledTypography>
         <ul className="column">
-          <SingleActivity
-            title={'Minecraft: montando o PC ideal '}
-            duration={'09:00 - 10:00'}
-            isFull={false}
-            spaceAvaliable={27}
-            isSubscribed={true}
-          />
-          <SingleActivity
-            title={'Minecraft: montando o PC ideal'}
-            duration={'09:00 - 10:00'}
+          {/* {activitiesInfo.activity.map((singleActivity) => <SingleActivity
+            title={singleActivity.name}
+            duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
             isFull={true}
-            spaceAvaliable={27}
-          />
+            spaceAvaliable={singleActivity.capacity}
+          />)}           */}
         </ul>
-      </div>
-      <div className="middle">
-        <StyledTypography variant="h5">Auditório Principal</StyledTypography>
-        <ul className="column">
-          <SingleActivity
-            title={'Minecraft: montando o PC ideal'}
-            duration={'09:00 - 10:00'}
-            isFull={false}
-            spaceAvaliable={27}
-            size="double"
-          />
-        </ul>
-      </div>
-
-      <div className="right">
-        {' '}
-        <StyledTypography variant="h5">Auditório Principal</StyledTypography>
-        <ul className="column"></ul>
-      </div>
+      </div>)}
     </Wrapper>
   );
 }

@@ -11,7 +11,7 @@ export async function getAcitivitiesDates(token) {
 }
 
 export async function getActivitiesByDay(token, date) {
-  const response = await api.get(`/hotels/${date}`, {
+  const response = await api.get(`/activities/${date}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

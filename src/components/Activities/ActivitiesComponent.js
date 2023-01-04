@@ -9,41 +9,40 @@ import { useEffect } from 'react';
 
 export default function ActivitiesComponent() {
   const { event } = useEvent();
-  const [selected, setSelected] = useState(null);
-  const handleSelected = (value) => {
-    setSelected(value);
-  };
   const { activities, getActivitiesDates } = useGetActivitiesDates();
-  const [datesDisplay, setDatesDisplay] = useState();
+  const [datesDisplay, setDatesDisplay] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   useEffect(async() => {
     const dates = await getActivitiesDates();
-    console.log(dates);
     let formattedDates = [];
-    for (let date of dates) {
+    for (let date of dates) {      
       const newDate = new Date(date.date);
+      const postDate = newDate.toISOString().slice(0, 10);
       const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
-      const formattedDate = newDate.toLocaleDateString('pt-BR', options);
-      formattedDates.push(formattedDate);
+      const displayDate = newDate.toLocaleDateString('pt-BR', options);
+      let id = dates.indexOf(date);
+      formattedDates.push({ id, postDate, displayDate });
     }
+    console.log(formattedDates);
     setDatesDisplay(formattedDates);
   }, []);
 
-  function removeSuffix(weekday) {
-    const index = weekday.indexOf('-');
-    return index !== -1 ? weekday.substring(0, index) : weekday;
-  }
+  // function removeSuffix(weekday) {
+  //   const index = weekday.indexOf('-');
+  //   return index !== -1 ? weekday.substring(0, index) : weekday;
+  // }
 
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
       <Container>
-        <h3>{selected ? '' : 'Primeiro, filtre pelo dia do evento'} </h3>
+        <h3>{selectedDay ? '' : 'Primeiro, filtre pelo dia do evento'} </h3>
       </Container>
       <DaysBox>
-        {datesDisplay.map((day, index) => <Day id={index} title={day} value={selected} handleSelected={handleSelected}/>)}
+        {datesDisplay.map((day, index) => <Day onClick={() => setSelectedDay(day)} day={day} title={day.displayDate} key={index} selectedDay={selectedDay} setSelectedDay={setSelectedDay} />)}
       </DaysBox>
-      {selected ? <ActivityBox /> : ''}
+      {selectedDay ? <ActivityBox day={selectedDay}/> : ''}
     </>
   );
 }
