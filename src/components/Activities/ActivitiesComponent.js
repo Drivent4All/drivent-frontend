@@ -1,15 +1,13 @@
 import { Typography } from '@material-ui/core';
 import { useState } from 'react';
 import styled from 'styled-components';
-import useEvent from '../../hooks/api/useEvent';
 import ActivityBox from './ActivityBox';
 import Day from './Day';
 import useGetActivitiesDates from '../../hooks/api/useGetActivitiesDates';
 import { useEffect } from 'react';
 
 export default function ActivitiesComponent() {
-  const { event } = useEvent();
-  const { activities, getActivitiesDates } = useGetActivitiesDates();
+  const { getActivitiesDates } = useGetActivitiesDates();
   const [datesDisplay, setDatesDisplay] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -50,7 +48,7 @@ const DaysBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 65%;
+  width: 100%;
   margin-bottom: 3rem;
 `;
 

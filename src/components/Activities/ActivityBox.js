@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useGetActivitiesByDay from '../../hooks/api/useGetActivitiesByDay';
 import { useEffect, useState } from 'react';
 import SingleActivity from './SingleActivity';
+import { toast } from 'react-toastify';
 
 export default function ActivityBox({ day }) {
   const date = day.postDate.toString();
@@ -25,7 +26,7 @@ export default function ActivityBox({ day }) {
       setActivitiesInfo(grouped);
     }
     catch (error) {
-      console.log(error.response);
+      toast('Algo deu errado!');
     }
   }, [day]);
 
@@ -34,7 +35,7 @@ export default function ActivityBox({ day }) {
       {activitiesList.map((activity) =>  <div >
         <StyledTypography variant="h5">{activity}</StyledTypography>
         <ul className="column">
-          {activitiesInfo[activity].map((singleActivity) => <SingleActivity
+          { activitiesInfo[activity].map((singleActivity) => <SingleActivity
             title={singleActivity.name}
             duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
             isFull={true}
@@ -48,7 +49,7 @@ export default function ActivityBox({ day }) {
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
   > div {
     display: flex;
     flex-direction: column;
@@ -57,7 +58,7 @@ const Wrapper = styled.div`
   }
 
   .column {
-    border: 2px solid #d7d7d7;
+    border: 1px solid #d7d7d7;
     padding: 0.5rem;
     min-width: 100%;
     max-width: 100%;
