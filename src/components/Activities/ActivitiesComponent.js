@@ -1,29 +1,45 @@
 import { Typography } from '@material-ui/core';
 import { useState } from 'react';
 import styled from 'styled-components';
-import useEvent from '../../hooks/api/useEvent';
 import ActivityBox from './ActivityBox';
 import Day from './Day';
+import useGetActivitiesDates from '../../hooks/api/useGetActivitiesDates';
+import { useEffect } from 'react';
 
 export default function ActivitiesComponent() {
-  const { event } = useEvent();
-  const [selected, setSelected] = useState(null);
-  const handleSelected = (value) => {
-    setSelected(value);
-  };
+  const { getActivitiesDates } = useGetActivitiesDates();
+  const [datesDisplay, setDatesDisplay] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  useEffect(async() => {
+    const dates = await getActivitiesDates();
+    let formattedDates = [];
+    for (let date of dates) {      
+      const newDate = new Date(date.date);
+      const postDate = newDate.toISOString().slice(0, 10);
+      const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
+      const displayDate = newDate.toLocaleDateString('pt-BR', options);
+      let id = dates.indexOf(date);
+      formattedDates.push({ id, postDate, displayDate });
+    }
+    setDatesDisplay(formattedDates);
+  }, []);
+
+  // function removeSuffix(weekday) {
+  //   const index = weekday.indexOf('-');
+  //   return index !== -1 ? weekday.substring(0, index) : weekday;
+  // }
 
   return (
     <>
       <StyledTypography variant="h4">Escolha de atividades</StyledTypography>
       <Container>
-        <h3>{selected ? '' : 'Primeiro, filtre pelo dia do evento'} </h3>
+        <h3>{selectedDay ? '' : 'Primeiro, filtre pelo dia do evento'} </h3>
       </Container>
       <DaysBox>
-        <Day title="Sexta, 22/10" value={selected} handleSelected={handleSelected} />
-        <Day title="Sab, 22/10" value={selected} handleSelected={handleSelected} />
-        <Day title="Dom, 22/10" value={selected} handleSelected={handleSelected} />
+        {datesDisplay.map((day, index) => <Day onClick={() => setSelectedDay(day)} day={day} title={day.displayDate} key={index} selectedDay={selectedDay} setSelectedDay={setSelectedDay} />)}
       </DaysBox>
-      {selected ? <ActivityBox /> : ''}
+      {selectedDay ? <ActivityBox day={selectedDay}/> : ''}
     </>
   );
 }
@@ -32,7 +48,7 @@ const DaysBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 65%;
+  width: 100%;
   margin-bottom: 3rem;
 `;
 
