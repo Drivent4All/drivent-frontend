@@ -12,7 +12,7 @@ export default function ActivityBox({ day }) {
   const [activitiesInfo, setActivitiesInfo] = useState({});
 
   useEffect(async() => {
-    try { 
+    try {
       const activities = await getActivities(date);
       const grouped = activities.reduce((acc, curr) => {
         const key = curr.place;
@@ -21,28 +21,33 @@ export default function ActivityBox({ day }) {
         }
         acc[key].push(curr);
         return acc;
-      }, {});      
+      }, {});
       setActivitiesList(Object.keys(grouped));
       setActivitiesInfo(grouped);
-    }
-    catch (error) {
+    } catch (error) {
       toast('Algo deu errado!');
     }
   }, [day]);
 
   return (
     <Wrapper>
-      {activitiesList.map((activity) =>  <div >
-        <StyledTypography variant="h5">{activity}</StyledTypography>
-        <ul className="column">
-          { activitiesInfo[activity].map((singleActivity) => <SingleActivity
-            title={singleActivity.name}
-            duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
-            isFull={true}
-            spaceAvaliable={singleActivity.capacity}
-          />)}          
-        </ul>
-      </div>)}
+      {activitiesList && activitiesList.map((activity, index) => (
+        <div key={index}>
+          <StyledTypography variant="h5">{activity}</StyledTypography>
+          <ul className="column">
+            {activitiesInfo[activity] && activitiesInfo[activity].map((singleActivity, index) => (
+              <SingleActivity
+                key={index}
+                index={singleActivity.id}
+                title={singleActivity.name}
+                duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
+                isFull={singleActivity === 0 ? true : false}
+                spaceAvaliable={singleActivity.capacity}
+              />
+            ))}
+          </ul>
+        </div>
+      ))}
     </Wrapper>
   );
 }

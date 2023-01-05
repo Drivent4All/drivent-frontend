@@ -2,10 +2,13 @@ import styled from 'styled-components';
 import eventFull from '../../assets/images/ant-design_close-circle-outlined.png';
 import eventNotFull from '../../assets/images/pepicons_enter.png';
 import subscribed from '../../assets/images/akar-icons_circle-check.png';
+import usePostActivity from '../../hooks/api/usePostActivity';
 
-export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed }) {
+export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed, index }) {
+  const { postActivity } = usePostActivity();
+  
   return (
-    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed}>
+    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed} onClick={ () => postActivity(index) }>
       <div className="left">
         <h1>{title}</h1>
         <h2>{duration}</h2>
@@ -30,6 +33,7 @@ const Wrapper = styled.div`
   justify-content: space-between;
   margin-bottom: 1rem;
   transition: all 0.5s;
+  z-index: 1;
   :hover {
     cursor: pointer;
     filter: brightness(0.95);
