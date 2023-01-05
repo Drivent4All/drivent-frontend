@@ -24,7 +24,6 @@ export default function ActivitiesComponent() {
       let id = dates.indexOf(date);
       formattedDates.push({ id, postDate, displayDate });
     }
-    console.log(formattedDates);
     setDatesDisplay(formattedDates);
   }, []);
 

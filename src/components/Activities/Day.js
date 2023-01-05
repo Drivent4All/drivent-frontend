@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
-import useGetActivitiesByDay from '../../hooks/api/useGetActivitiesByDay';
 
 export default function Day({ selectedDay, onClick, day }) {
   const [ selected, setSelected ] = useState(false);

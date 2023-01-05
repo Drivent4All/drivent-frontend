@@ -21,7 +21,6 @@ export default function ActivityBox({ day }) {
         acc[key].push(curr);
         return acc;
       }, {});      
-      console.log(Object.keys(grouped));   
       setActivitiesList(Object.keys(grouped));
       setActivitiesInfo(grouped);
     }
@@ -35,12 +34,12 @@ export default function ActivityBox({ day }) {
       {activitiesList.map((activity) =>  <div >
         <StyledTypography variant="h5">{activity}</StyledTypography>
         <ul className="column">
-          {/* {activitiesInfo.activity.map((singleActivity) => <SingleActivity
+          {activitiesInfo[activity].map((singleActivity) => <SingleActivity
             title={singleActivity.name}
             duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
             isFull={true}
             spaceAvaliable={singleActivity.capacity}
-          />)}           */}
+          />)}          
         </ul>
       </div>)}
     </Wrapper>
