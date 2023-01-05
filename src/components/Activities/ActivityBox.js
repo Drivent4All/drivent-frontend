@@ -29,18 +29,15 @@ export default function ActivityBox({ day }) {
     }
   }, [day]);
 
-  useEffect(() => {
-    console.log(activitiesInfo);
-  }, []);
-
   return (
     <Wrapper>
       {activitiesList && activitiesList.map((activity) => (
         <div>
           <StyledTypography variant="h5">{activity}</StyledTypography>
           <ul className="column">
-            {activitiesInfo[activity] && activitiesInfo[activity].map((singleActivity) => (
+            {activitiesInfo[activity] && activitiesInfo[activity].map((singleActivity, index) => (
               <SingleActivity
+                key={index}
                 title={singleActivity.name}
                 duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
                 isFull={false}
