@@ -31,16 +31,17 @@ export default function ActivityBox({ day }) {
 
   return (
     <Wrapper>
-      {activitiesList && activitiesList.map((activity) => (
-        <div>
+      {activitiesList && activitiesList.map((activity, index) => (
+        <div key={index}>
           <StyledTypography variant="h5">{activity}</StyledTypography>
           <ul className="column">
             {activitiesInfo[activity] && activitiesInfo[activity].map((singleActivity, index) => (
               <SingleActivity
                 key={index}
+                index={singleActivity.id}
                 title={singleActivity.name}
                 duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
-                isFull={false}
+                isFull={singleActivity === 0 ? true : false}
                 spaceAvaliable={singleActivity.capacity}
               />
             ))}
