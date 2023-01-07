@@ -7,6 +7,7 @@ import { useState } from 'react';
 import usePayment from '../hooks/api/usePayment';
 import PaymentConfirmation from '../pages/Dashboard/Payment/PaymentConfirmation';
 import useEnrollment from '../hooks/api/useEnrollment';
+import { toast } from 'react-toastify';
 
 export default function MakePayment() {
   const { ticket } = useTicket();
@@ -18,12 +19,14 @@ export default function MakePayment() {
   const { getEnrollment } = useEnrollment();
 
   useEffect(async() => {
-    const userTicket = await ticket();
-    setTicketType(userTicket.TicketType);
-    setUserTicket(userTicket);
-    if(userTicket.status === 'PAID') {
-      setIsPayed(true);
-    }
+    try {
+      const userTicket = await ticket();
+      setTicketType(userTicket.TicketType);
+      setUserTicket(userTicket);
+      if(userTicket.status === 'PAID') {
+        setIsPayed(true);
+      }
+    }catch(err) {}
   }, [isEnrolled]);
 
   useEffect(async() => {

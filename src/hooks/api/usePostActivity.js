@@ -1,16 +1,15 @@
 import useAsync from '../useAsync';
 import useToken from '../useToken';
 
-import * as activityApi from '../../services/activityApi';
+import * as activitiesApi from '../../services/activitiesApi';
 
 export default function usePostActivity() {
   const token = useToken();
-
   const {
     loading: postActivityLoading,
     error: postActivityError,
     act: postActivity
-  } = useAsync((data) => activityApi.post(data, token), false);
+  } = useAsync((data) => activitiesApi.post(data, token), false);
 
   return {
     postActivityLoading,
