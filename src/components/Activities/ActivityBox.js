@@ -41,8 +41,9 @@ export default function ActivityBox({ day }) {
                 index={singleActivity.id}
                 title={singleActivity.name}
                 duration={`${singleActivity.startsAt} - ${singleActivity.endsAt}`}
-                isFull={singleActivity === 0 ? true : false}
+                isFull={singleActivity.capacity === 0 ? true : false}
                 spaceAvaliable={singleActivity.capacity}
+                size={Number(singleActivity.endsAt.split('h')[0]) - Number(singleActivity.startsAt.split('h')[0]) === 2 ? 'double' : 'regular'}
               />
             ))}
           </ul>
