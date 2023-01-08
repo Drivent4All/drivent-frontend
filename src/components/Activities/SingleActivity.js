@@ -5,10 +5,21 @@ import subscribed from '../../assets/images/akar-icons_circle-check.png';
 import usePostActivity from '../../hooks/api/usePostActivity';
 import { toast } from 'react-toastify';
 
-export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed, index }) {
+export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed, index, day }) {
   const { postActivity } = usePostActivity();
+
+  const subscribe = async(id) => {
+    try {
+      postActivity(id);
+      day = day;
+      toast('Inscrito com sucesso!');
+    }catch(err) {
+      toast('Houve um erro ao completar sua inscrição...');
+    }
+  };
+
   return (
-    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed} onClick={ spaceAvaliable !== 0 ? () => postActivity(index) : () => toast('Capacidade máxima atingida') }>
+    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed} onClick={ spaceAvaliable !== 0 ? () => subscribe(index) : () => toast('Capacidade máxima atingida') }>
       <div className="left">
         <h1>{title}</h1>
         <h2>{duration}</h2>

@@ -44,6 +44,7 @@ export default function ActivityBox({ day }) {
                 isFull={singleActivity.capacity === 0 ? true : false}
                 spaceAvaliable={singleActivity.capacity}
                 size={Number(singleActivity.endsAt.split('h')[0]) - Number(singleActivity.startsAt.split('h')[0]) === 2 ? 'double' : 'regular'}
+                day={day}
               />
             ))}
           </ul>
