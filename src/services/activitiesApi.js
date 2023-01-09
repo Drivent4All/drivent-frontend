@@ -21,7 +21,7 @@ export async function getActivitiesByDay(token, date) {
 }
 
 export async function post(id, token) {
-  const response = await api.post(`/activities/${id}`, {
+  const response = await api.post(`/activities/${id}`, {}, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -30,4 +30,13 @@ export async function post(id, token) {
   return response.data;
 }
 
+export async function check(data, token) {
+  const response = await api.get(`/activities/user/${data}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+}
 //
