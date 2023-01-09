@@ -4,30 +4,52 @@ import eventNotFull from '../../assets/images/pepicons_enter.png';
 import subscribed from '../../assets/images/akar-icons_circle-check.png';
 import usePostActivity from '../../hooks/api/usePostActivity';
 import { toast } from 'react-toastify';
+import useCheckSubscription from '../../hooks/api/useCheckSubscription';
+import { useEffect, useState } from 'react';
 
-export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, isSubscribed, index, day }) {
+export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, index, setRefresh, refresh }) {
   const { postActivity } = usePostActivity();
+  const { checkSubscription } = useCheckSubscription();
+  const [ isSubscribed, setIsSubcribed ] = useState(false);
+
+  useEffect(async() => {
+    try {
+      const sub = await checkSubscription(index);
+      if(!sub) return;
+      setIsSubcribed(true);
+    }catch(err) {
+    }
+  }, [refresh] );
 
   const subscribe = async(id) => {
+    if(isSubscribed) {
+      toast('Você já está inscrito nessa atividade');
+      return;
+    };
+    if(spaceAvaliable === 0) {
+      toast('Capacidade máxima atingida');
+      return;
+    }
     try {
-      postActivity(id);
-      day = day;
+      await postActivity(id);
+      setRefresh(2);
       toast('Inscrito com sucesso!');
+      setRefresh(refresh + 1);
     }catch(err) {
       toast('Houve um erro ao completar sua inscrição...');
     }
   };
 
   return (
-    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed} onClick={ spaceAvaliable !== 0 ? () => subscribe(index) : () => toast('Capacidade máxima atingida') }>
+    <Wrapper isFull={isFull} size={size} isSubscribed={isSubscribed} onClick={ () => subscribe(index)}>
       <div className="left">
         <h1>{title}</h1>
         <h2>{duration}</h2>
       </div>
       <div className="middle"></div>
       <div className="right">
-        <img src={isFull ? eventFull : isSubscribed ? subscribed : eventNotFull} alt='icon' />
-        <p> {isFull ? 'esgotado' : isSubscribed ? 'Inscrito' : `${spaceAvaliable} vagas`}</p>
+        <img src={isSubscribed ? subscribed : isFull ? eventFull : eventNotFull} alt='icon' />
+        <p> {isSubscribed ? 'Inscrito' : isFull ? 'esgotado' : `${spaceAvaliable} vagas`}</p>
       </div>
     </Wrapper>
   );
@@ -82,7 +104,7 @@ const Wrapper = styled.div`
     p {
       text-align: center;
       margin-top: 5px;
-      color: ${(props) => (props.isFull ? 'red' : 'green')};
+      color: ${(props) => (props.isFull ? props.isSubscribed? 'green' : 'red' : 'green')};
     }
     img {
       max-width: 30px;

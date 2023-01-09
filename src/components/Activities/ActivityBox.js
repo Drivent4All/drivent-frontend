@@ -10,6 +10,7 @@ export default function ActivityBox({ day }) {
   const { getActivities } = useGetActivitiesByDay();
   const [activitiesList, setActivitiesList] = useState([]);
   const [activitiesInfo, setActivitiesInfo] = useState({});
+  const [ refresh, setRefresh ] = useState(0);
 
   useEffect(async() => {
     try {
@@ -27,7 +28,7 @@ export default function ActivityBox({ day }) {
     } catch (error) {
       toast('Algo deu errado!');
     }
-  }, [day]);
+  }, [day, refresh]);
 
   return (
     <Wrapper>
@@ -44,7 +45,8 @@ export default function ActivityBox({ day }) {
                 isFull={singleActivity.capacity === 0 ? true : false}
                 spaceAvaliable={singleActivity.capacity}
                 size={Number(singleActivity.endsAt.split('h')[0]) - Number(singleActivity.startsAt.split('h')[0]) === 2 ? 'double' : 'regular'}
-                day={day}
+                setRefresh={setRefresh}
+                refresh={refresh}
               />
             ))}
           </ul>

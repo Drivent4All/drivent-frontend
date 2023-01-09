@@ -30,4 +30,13 @@ export async function post(id, token) {
   return response.data;
 }
 
+export async function check(data, token) {
+  const response = await api.get(`/activities/user/${data}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+}
 //
