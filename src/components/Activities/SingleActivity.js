@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import useCheckSubscription from '../../hooks/api/useCheckSubscription';
 import { useEffect, useState } from 'react';
 
-export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, index, setRefresh, refresh }) {
+export default function SingleActivity({ title, duration, isFull, spaceAvaliable, size, index }) {
   const { postActivity } = usePostActivity();
   const { checkSubscription } = useCheckSubscription();
   const [ isSubscribed, setIsSubcribed ] = useState(false);
@@ -19,7 +19,7 @@ export default function SingleActivity({ title, duration, isFull, spaceAvaliable
       setIsSubcribed(true);
     }catch(err) {
     }
-  }, [refresh] );
+  }, [] );
 
   const subscribe = async(id) => {
     if(isSubscribed) {
@@ -32,9 +32,8 @@ export default function SingleActivity({ title, duration, isFull, spaceAvaliable
     }
     try {
       await postActivity(id);
-      setRefresh(2);
+      setIsSubcribed(true);
       toast('Inscrito com sucesso!');
-      setRefresh(refresh + 1);
     }catch(err) {
       toast('Houve um erro ao completar sua inscrição...');
     }

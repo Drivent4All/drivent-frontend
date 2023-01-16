@@ -46,7 +46,7 @@ export default function ActivitiesComponent() {
 
 const DaysBox = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
   margin-bottom: 3rem;
