@@ -35,7 +35,7 @@ export default function SingleActivity({ title, duration, isFull, spaceAvaliable
       setIsSubcribed(true);
       toast('Inscrito com sucesso!');
     }catch(err) {
-      toast('Houve um erro ao completar sua inscrição...');
+      toast(err.response.data);
     }
   };
 
